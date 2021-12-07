@@ -32,7 +32,7 @@ const corsOptions = {
 
 //------------------- MIDDLEWARES-------------------
 server.use(express.static(srcFolderPath));
-/* server.use(loggerMiddleware); */
+server.use(loggerMiddleware);
 server.use(cors(corsOptions));
 server.use(express.json());
 //------------------- MIDDLEWARES-------------------
