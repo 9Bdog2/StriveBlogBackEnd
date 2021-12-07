@@ -21,11 +21,11 @@ const srcFolderPath = join(process.cwd(), "src");
 const whiteList = [process.env.FE_LOCAL_URL, process.env.FE_REMOTE_URL];
 
 const corsOptions = {
-  origin: function (origin, next) {
-    if (!origin || whiteList.indexOf(origin) !== -1) {
-      next(null, true);
+  origin: (origin, callback) => {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true);
     } else {
-      next(new Error("Not allowed by CORS"));
+      callback(new Error("Not allowed by CORS"));
     }
   },
 };
