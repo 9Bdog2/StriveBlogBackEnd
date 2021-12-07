@@ -1,0 +1,40 @@
+[
+    {
+      "name": "Carole",
+      "surname": "Runolfsson",
+      "email": "Lamont.Maggio@yahoo.com",
+      "dateOfBirth": "Mon Jul 12 2021 13:30:48 GMT+0200 (Central European Summer Time)",
+      "avatar": "https://cdn.fakercloud.com/avatars/nerrsoft_128.jpg",
+      "createdAt": "2021-11-30T13:38:39.535Z",
+      "id": "1l2exi1uckwm5brjj",
+      "updatedAt": "2021-12-02T13:11:30.178Z"
+    },
+    {
+      "name": "Agustin",
+      "surname": "Leuschke",
+      "email": "Lenna_Reilly61@hotmail.com",
+      "dateOfBirth": "Fri Jul 23 2021 19:24:27 GMT+0200 (Central European Summer Time)",
+      "avatar": "https://cdn.fakercloud.com/avatars/fabbianz_128.jpg",
+      "createdAt": "2021-12-02T13:45:49.031Z",
+      "id": "1l2exicp0kwp0goa0"
+    },
+    {
+      "name": "Bessie",
+      "surname": "Ondricka",
+      "email": "Joany90@gmail.com",
+      "dateOfBirth": "Fri Jul 02 2021 12:51:35 GMT+0200 (Central European Summer Time)",
+      "avatar": "https://cdn.fakercloud.com/avatars/bagawarman_128.jpg",
+      "createdAt": "2021-12-02T13:45:50.034Z",
+      "id": "1l2exicp0kwp0gp1u"
+    },
+    {
+      "name": "Kylee",
+      "surname": "Marquardt",
+      "email": "Matt.Mohr28@yahoo.com",
+      "dateOfBirth": "Fri Dec 04 2020 16:44:06 GMT+0100 (Central European Standard Time)",
+      "avatar": "https://cdn.fakercloud.com/avatars/orkuncaylar_128.jpg",
+      "createdAt": "2021-12-02T13:45:50.747Z",
+      "id": "1l2exicp0kwp0gpln"
+    }
+  ]
+  
