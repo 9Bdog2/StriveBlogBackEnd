@@ -14,14 +14,26 @@ import { join } from "path";
 
 const server = express();
 
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 const srcFolderPath = join(process.cwd(), "src");
+
+const whiteList = [process.env.FE_LOCAL_URL, process.env.FE_REMOTE_URL];
+
+const corsOptions = {
+  origin: function (oridgin, next) {
+    if (!origin || whiteList.indexOf(oridgin) !== -1) {
+      next(null, true);
+    } else {
+      next(new Error("Not allowed by CORS"));
+    }
+  },
+};
 
 //------------------- MIDDLEWARES-------------------
 server.use(express.static(srcFolderPath));
 server.use(loggerMiddleware);
-server.use(cors());
+server.use(cors(corsOptions));
 server.use(express.json());
 //------------------- MIDDLEWARES-------------------
 //------------------- ENDPOINTS-------------------

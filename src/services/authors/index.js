@@ -8,6 +8,8 @@ import {
 } from "../../lib/fs-tools.js";
 import createHttpError from "http-errors";
 import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const authorsRouter = express.Router();
 //------------------- File Path as no DB connection-------------------
@@ -31,6 +33,19 @@ email
 date of birth
 avatar (e.g. https://ui-avatars.com/api/?name=John+Doe) 
 */
+
+//------------------- MULTER CLOUDINARY-------------------
+const cloudUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "strive_blogs_authors",
+    },
+  }),
+}).single("avatar");
+
+//------------------- MULTER CLOUDINARY-------------------
+
 //------------------- ENDPOINTS-------------------
 
 authorsRouter.get("/", async (req, res, next) => {
@@ -145,7 +160,7 @@ POST /authors/:id/uploadAvatar, uploads a picture
  (save as idOfTheAuthor.png in the public/img/authors folder) for the author specified by the id. 
  Store the newly created URL into the corresponding author in authors.json
 */
-const uploadFile = multer({
+/* const uploadFile = multer({
   fileFilter: (req, file, multerNext) => {
     if (file.mimetype !== "image/png") {
       multerNext(createHttpError(400, "Wrong file type"));
@@ -153,15 +168,15 @@ const uploadFile = multer({
       multerNext(null, true);
     }
   },
-}).single("avatar");
+}).single("avatar"); */
 
 authorsRouter.post(
   "/:authorId/uploadAvatar",
-  uploadFile,
+  cloudUploader,
   async (req, res, next) => {
     try {
       console.log("The File : ", req.file);
-      await saveAuthorsAvatar(req.params.authorId, req.file.buffer);
+      /* await saveAuthorsAvatar(req.params.authorId, req.file.buffer); */
       // modify user record by adding/editing avatar field
 
       // 1. get author
@@ -175,7 +190,7 @@ authorsRouter.post(
       console.log(author);
       // 4. save author back into authors.json
       /* await writeAuthors(author); */
-      res.status(201).send("The Avatar has been posted");
+      res.status(201).send("The Avatar has been posted", author);
     } catch (error) {
       next(error);
     }
