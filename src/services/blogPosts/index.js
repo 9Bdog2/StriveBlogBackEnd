@@ -290,7 +290,7 @@ blogPostsRouter.get("/:blogPostId/downloadCSV", async (req, res, next) => {
     res.setHeader("Content-Disposition", 'attachment; filename="blogPost.csv"');
     const source = getCSVReadableStream();
     const transform = new json2csv.Transform({
-      fields: ["title", "content", "_id", "createdAt"],
+      fields: ["title", "content", "_id", "createdAt", "cover"],
     });
     const destination = res;
 

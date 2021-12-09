@@ -10,6 +10,7 @@ import createHttpError from "http-errors";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { sendRegistrationEMail } from "../../lib/email-tools.js";
 
 const authorsRouter = express.Router();
 //------------------- File Path as no DB connection-------------------
@@ -196,5 +197,16 @@ authorsRouter.post(
     }
   }
 );
+
+authorsRouter.post("/register", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    
+    await sendRegistrationEMail(email);
+    res.status(201).send("The email has been sent");
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default authorsRouter;
