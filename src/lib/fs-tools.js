@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-const { writeJSON, readJSON, writeFile } = fs;
+const { writeJSON, readJSON, writeFile, createReadStream } = fs;
 
 const dataFolderPath = join(dirname(fileURLToPath(import.meta.url)), "../data");
 const authorsPublicFolderPath = join(process.cwd(), "./src/img/authors");
@@ -27,3 +27,5 @@ export const saveAuthorsAvatar = (filename, contentAsBuffer) =>
   writeFile(join(authorsPublicFolderPath, filename), contentAsBuffer);
 export const saveBlogPostCover = (filename, contentAsBuffer) =>
   writeFile(join(blogPostsPublicFolderPath, filename), contentAsBuffer);
+
+export const getBlogPostsPdf = () => createReadStream(blogPostsJSONPath);

@@ -6,7 +6,9 @@ import { validationResult } from "express-validator";
 import { postBlogValidation } from "./validation.js";
 import { getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js";
 import multer from "multer";
-import { saveBlogPostCover } from "../../lib/fs-tools.js";
+import { saveBlogPostCover, getBlogPostsPdf } from "../../lib/fs-tools.js";
+import { getPDFReadebleStream } from "../../lib/pdf-tools.js";
+import { pipeline } from "stream";
 
 const blogPostsRouter = express.Router();
 
@@ -60,7 +62,7 @@ blogPostsRouter.get("/", async (req, res, next) => {
  "createdAt": "NEW DATE"
 }
 */
-blogPostsRouter.post("/", postBlogValidation, async (req, res, next) => {
+blogPostsRouter.post("/", /* postBlogValidation, */ async (req, res, next) => {
   try {
     const errorList = validationResult(req);
     if (!errorList.isEmpty()) {
@@ -170,7 +172,7 @@ POST /blogPosts/:id/uploadCover, uploads a picture
 const uploadFile = multer({
   fileFilter: (req, file, multerNext) => {
     if (file.mimetype !== "image/png") {
-      multerNext(createHttpError(400, "Wrong file type"));
+      multerNext(createHttpError(400, "Wrong file type"), false);
     } else {
       multerNext(null, true);
     }
@@ -242,6 +244,35 @@ blogPostsRouter.post("/:blogPostId/comments", async (req, res, next) => {
     } else {
       next(createHttpError(404, "No blogpost found"));
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogPostsRouter.get("/:blogPostId/downloadPDF", async (req, res, next) => {
+  try {
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="blogPosts.pdf"'
+    );
+    const blogPosts = await getBlogPosts();
+    const blogPost = blogPosts.find(
+      (blogPost) => blogPost._id === req.params.blogPostId
+    );
+    console.log(blogPost);
+    if (blogPost) {
+      const source = getPDFReadebleStream(blogPost);
+      const destination = res;
+
+      pipeline(source, destination, (err) => {
+        if (err) {
+          next(err, "Error in pipeline");
+        }
+      });
+    } else {
+      next(createHttpError(404, "No blogpost found"));
+    }
+
   } catch (error) {
     next(error);
   }

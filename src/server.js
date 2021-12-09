@@ -22,7 +22,6 @@ const whiteList = [process.env.FE_LOCAL_URL, process.env.FE_REMOTE_URL];
 
 const corsOptions = {
   origin: function (origin, next) {
-    console.log(arguments);
     if (!origin || whiteList.indexOf(origin) !== -1) {
       next(null, true);
     } else {
