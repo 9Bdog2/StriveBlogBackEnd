@@ -29,3 +29,4 @@ export const saveBlogPostCover = (filename, contentAsBuffer) =>
   writeFile(join(blogPostsPublicFolderPath, filename), contentAsBuffer);
 
 export const getBlogPostsPdf = () => createReadStream(blogPostsJSONPath);
+export const getCSVReadableStream = () => createReadStream(blogPostsJSONPath);

@@ -6,9 +6,14 @@ import { validationResult } from "express-validator";
 import { postBlogValidation } from "./validation.js";
 import { getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js";
 import multer from "multer";
-import { saveBlogPostCover, getBlogPostsPdf } from "../../lib/fs-tools.js";
+import {
+  saveBlogPostCover,
+  getBlogPostsPdf,
+  getCSVReadableStream,
+} from "../../lib/fs-tools.js";
 import { getPDFReadebleStream } from "../../lib/pdf-tools.js";
 import { pipeline } from "stream";
+import json2csv from "json2csv";
 
 const blogPostsRouter = express.Router();
 
@@ -62,44 +67,47 @@ blogPostsRouter.get("/", async (req, res, next) => {
  "createdAt": "NEW DATE"
 }
 */
-blogPostsRouter.post("/", /* postBlogValidation, */ async (req, res, next) => {
-  try {
-    const errorList = validationResult(req);
-    if (!errorList.isEmpty()) {
-      next(
-        createHttpError(400, "Invalid blogpost data", {
-          errors: errorList.array(),
-        })
-      );
-    } else {
-      const newBlogPost = {
-        ...req.body,
-        _id: uniqid(),
-        category: req.body.category.toUpperCase(),
-        title: req.body.title.toUpperCase(),
-        cover: req.body.cover,
-        readTime: {
-          value: req.body.readTime.value,
-          unit: req.body.readTime.unit,
-        },
-        author: {
-          name: req.body.author.name,
-          avatar: req.body.author.avatar,
+blogPostsRouter.post(
+  "/",
+  /* postBlogValidation, */ async (req, res, next) => {
+    try {
+      const errorList = validationResult(req);
+      if (!errorList.isEmpty()) {
+        next(
+          createHttpError(400, "Invalid blogpost data", {
+            errors: errorList.array(),
+          })
+        );
+      } else {
+        const newBlogPost = {
+          ...req.body,
           _id: uniqid(),
-        },
-        comments: [],
-        content: req.body.content,
-        createdAt: new Date().toISOString(),
-      };
-      const blogPosts = await getBlogPosts();
-      blogPosts.push(newBlogPost);
-      await writeBlogPosts(blogPosts);
-      res.status(201).send(newBlogPost);
+          category: req.body.category.toUpperCase(),
+          title: req.body.title.toUpperCase(),
+          cover: req.body.cover,
+          readTime: {
+            value: req.body.readTime.value,
+            unit: req.body.readTime.unit,
+          },
+          author: {
+            name: req.body.author.name,
+            avatar: req.body.author.avatar,
+            _id: uniqid(),
+          },
+          comments: [],
+          content: req.body.content,
+          createdAt: new Date().toISOString(),
+        };
+        const blogPosts = await getBlogPosts();
+        blogPosts.push(newBlogPost);
+        await writeBlogPosts(blogPosts);
+        res.status(201).send(newBlogPost);
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 blogPostsRouter.get("/:blogPostId", async (req, res, next) => {
   try {
@@ -272,7 +280,25 @@ blogPostsRouter.get("/:blogPostId/downloadPDF", async (req, res, next) => {
     } else {
       next(createHttpError(404, "No blogpost found"));
     }
+  } catch (error) {
+    next(error);
+  }
+});
 
+blogPostsRouter.get("/:blogPostId/downloadCSV", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", 'attachment; filename="blogPost.csv"');
+    const source = getCSVReadableStream();
+    const transform = new json2csv.Transform({
+      fields: ["title", "content", "_id", "createdAt"],
+    });
+    const destination = res;
+
+    pipeline(source, transform, destination, (err) => {
+      if (err) {
+        next(err, "Error in pipeline");
+      }
+    });
   } catch (error) {
     next(error);
   }
